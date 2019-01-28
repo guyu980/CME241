@@ -23,6 +23,8 @@ class MRP(MP):
         return np.linalg.inv(np.eye(len(self.states)) - self.gamma * self.transition_matrix \
                              ).dot(self.reward_func)
 
+
+
 if __name__ == '__main__':
     transitions = {
         1: {1: 0.2, 2: 0.3, 3: 0.1, 4: 0.1, 5: 0.3},
