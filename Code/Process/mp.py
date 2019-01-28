@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Mapping
+from typing import Mapping, List
 from utils.generic_typevars import S
 from utils.utils import is_equal
 
 class MP:
-    def __init__(self, transitions: Mapping[S, Mapping[S, float]]):
+    def __init__(self, transitions: Mapping[S, Mapping[S, float]]) -> None:
         if self.check_mp(transitions):
             self.transitions = transitions
-            self.states = list(self.transitions.keys())
+            self.states = self.get_all_states()
             self.transition_matrix = self.generate_matrix(self.transitions)
         else:
             raise ValueError
@@ -22,6 +22,9 @@ class MP:
         # Check the sum of probabilities for each state equals to 1
         b3 = all(is_equal(sum(transitions[state].values()), 1.) for state in transitions)        
         return b1 and b2 and b3
+    
+    def get_all_states(self) -> List:
+        return list(self.transitions.keys())
     
     def generate_matrix(self, dict_obj) -> np.array:
         matrix = np.zeros((len(self.states), len(self.states)))
