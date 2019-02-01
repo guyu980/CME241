@@ -3,8 +3,10 @@ from mp import MP
 from mrp import MRP
 from policy import Policy
 from typing import Mapping, List
+from operator import itemgetter
 from utils.generic_typevars import S, A
 from utils.utils import sum_dicts 
+from utils.utils import is_equal
 
 class MDP(MP):
     def __init__(self, transitions: Mapping[S, Mapping[A, Mapping[S, float]]], \
@@ -37,7 +39,34 @@ class MDP(MP):
                 for s1, p in self.transitions[s][a].items())
                 for a, r in v.items()}
                 for s, v in self.rewards.items()} 
+
+    def iterative_policy_evaluation(self, pol: Policy) -> np.array:
+        mrp = self.get_mrp(pol)
+        v0 = np.zeros(len(self.states))
+        converge = False
+        while not converge:
+            v1 = mrp.reward_func + self.gamma*mrp.transition_matrix.dot(v0)
+            converge = is_equal(np.linalg.norm(v1), np.linalg.norm(v0))
+            v0 = v1
+        return v1
     
+    def greedy_improvement_policy(self, pol: Policy) -> Policy:
+        q = self.get_action_value_func(pol)
+        return Policy(x = {s: {max(v.items(), key=itemgetter(1))[0]: 1}
+                           for s, v in q.items()})
+    
+    def policy_iteration(self, pol: Policy):
+        pol = Policy({s: {a: 1. / len(v) for a in v} for s, v in
+                      self.rewards.items()})
+        v_old = self.get_state_value_func(pol)
+        converge = False
+        while not converge:
+            pol = self.greedy_improved_policy(pol)
+            v_new = self.iterative_policy_evaluation(pol)
+            converge = is_equal(np.linalg.norm(v_new), np.linalg.norm(v_old))
+            v_old = v_new
+        return pol
+
 
 
 if __name__ == '__main__':
