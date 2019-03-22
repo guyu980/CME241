@@ -1,13 +1,13 @@
 from typing import Mapping, Optional, Set, Callable
 from abc import abstractmethod
-from algorithms.tabular_base import TabularBase
-from processes.mdp_rep_for_rl_tabular import MDPRepForRLTabular
-from processes.policy import Policy
-from processes.det_policy import DetPolicy
-from algorithms.helper_funcs import get_vf_dict_from_qf_dict_and_policy
-from algorithms.helper_funcs import get_uniform_policy
-from algorithms.helper_funcs import get_det_policy_from_qf_dict
-from algorithms.helper_funcs import get_epsilon_decay_func
+from tabular_base import TabularBase
+from Process.mdp_rep_for_rl_tabular import MDPRepForRLTabular
+from Process.policy import Policy
+from Process.det_policy import DetPolicy
+from helper_funcs import get_vf_dict_from_qf_dict_and_policy
+from helper_funcs import get_uniform_policy
+from helper_funcs import get_det_policy_from_qf_dict
+from helper_funcs import get_epsilon_decay_func
 from utils.generic_typevars import S, A
 from utils.standard_typevars import VFDictType, QFDictType
 
