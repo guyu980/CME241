@@ -1,12 +1,10 @@
 from typing import Mapping, Set, Sequence, Optional, Callable, Tuple
-from processes.policy import Policy
-from processes.det_policy import DetPolicy
+from Process.policy import Policy
+from Process.det_policy import DetPolicy
 import numpy as np
 from scipy.linalg import toeplitz
 from operator import itemgetter
 from collections import Counter
-from processes.mp_funcs import get_epsilon_action_probs
-from processes.mp_funcs import get_softmax_action_probs
 from utils.generic_typevars import S, A
 from utils.standard_typevars import SAf, PolicyType, PolicyActDictType
 
@@ -169,27 +167,3 @@ def get_policy_as_action_dict(polf: PolicyType, num_samples: int)\
         return get_pdf_from_samples(polf(s)(num_samples))
 
     return pf
-
-
-if __name__ == '__main__':
-    rewards_list = [1., 2., 3., 4., 5., 6.]
-    gamma_val = 0.9
-    count = 4
-    nt_returns_list = get_returns_from_rewards_non_terminating(
-        rewards_list,
-        gamma_val,
-        count
-    )
-    print(nt_returns_list)
-    term_returns_list = get_returns_from_rewards_terminating(
-        rewards_list,
-        gamma_val
-    )
-    print(term_returns_list)
-
-    pd = {'a': 0.3, 'b': 0.2, 'c': 0.4, 'd': 0.1}
-    from processes.mp_funcs import get_sampling_func_from_prob_dict
-    seqf = get_sampling_func_from_prob_dict(pd)
-    seq = seqf(1000)
-    print(seq)
-    print(Counter(seq))
