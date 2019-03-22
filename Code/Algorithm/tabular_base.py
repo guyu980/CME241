@@ -1,9 +1,9 @@
 from typing import Mapping, Set, Callable
 from abc import abstractmethod
-from algorithms.opt_base import OptBase
-from processes.policy import Policy
-from processes.det_policy import DetPolicy
-from algorithms.helper_funcs import get_pdf_from_samples
+from opt_base import OptBase
+from Process.policy import Policy
+from Process.det_policy import DetPolicy
+from helper_funcs import get_pdf_from_samples
 from utils.generic_typevars import S, A
 from utils.standard_typevars import VFDictType, QFDictType, PolicyType
 
