@@ -1,12 +1,12 @@
 from typing import Callable, Optional
 from abc import abstractmethod
-from algorithms.opt_base import OptBase
-from processes.mdp_rep_for_rl_fa import MDPRepForRLFA
-from algorithms.func_approx_spec import FuncApproxSpec
+from opt_base import OptBase
+from Process.mdp_rep_for_rl_fa import MDPRepForRLFA
+from func_approx_spec import FuncApproxSpec
 from func_approx.func_approx_base import FuncApproxBase
-from algorithms.helper_funcs import get_uniform_policy_func
-from algorithms.helper_funcs import get_epsilon_decay_func
-from algorithms.helper_funcs import get_pdf_from_samples
+from helper_funcs import get_uniform_policy_func
+from helper_funcs import get_epsilon_decay_func
+from helper_funcs import get_pdf_from_samples
 from operator import itemgetter
 from utils.generic_typevars import S, A
 from utils.standard_typevars import VFType, QFType
