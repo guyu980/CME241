@@ -109,11 +109,6 @@ class MonteCarlo(RLFuncApproxBase):
             else:
                 start_state = self.mdp_rep.init_state_gen()
                 start_action = None
-
-            # print((episodes, max(self.qvf_fa.get_func_eval((start_state, a)) for a in
-            #        self.mdp_rep.state_action_func(start_state))))
-            # print(self.qvf_fa.params)
-
             mc_path = self.get_mc_path(
                 this_polf,
                 start_state,
@@ -147,90 +142,3 @@ class MonteCarlo(RLFuncApproxBase):
             episodes += 1
 
         return lambda st: lambda act, st=st: self.qvf_fa.get_func_eval((st, act))
-
-
-if __name__ == '__main__':
-    from processes.mdp_refined import MDPRefined
-    mdp_refined_data = {
-        1: {
-            'a': {1: (0.3, 9.2), 2: (0.6, 4.5), 3: (0.1, 5.0)},
-            'b': {2: (0.3, -0.5), 3: (0.7, 2.6)},
-            'c': {1: (0.2, 4.8), 2: (0.4, -4.9), 3: (0.4, 0.0)}
-        },
-        2: {
-            'a': {1: (0.3, 9.8), 2: (0.6, 6.7), 3: (0.1, 1.8)},
-            'c': {1: (0.2, 4.8), 2: (0.4, 9.2), 3: (0.4, -8.2)}
-        },
-        3: {
-            'a': {3: (1.0, 0.0)},
-            'b': {3: (1.0, 0.0)}
-        }
-    }
-    gamma_val = 1.0
-    mdp_ref_obj1 = MDPRefined(mdp_refined_data, gamma_val)
-    mdp_rep_obj = mdp_ref_obj1.get_mdp_rep_for_rl_tabular()
-
-    exploring_start_val = False
-    softmax_flag = False
-    episodes_limit = 10000
-    epsilon_val = 0.1
-    epsilon_half_life_val = 1000
-    learning_rate_val = 0.1
-    max_steps_val = 1000
-    state_ff = [lambda s: float(s)]
-    sa_ff = [
-        lambda x: float(x[0]),
-        lambda x: 1. if x[1] == 'a' else 0.,
-        lambda x: 1. if x[1] == 'b' else 0.,
-        lambda x: 1. if x[1] == 'c' else 0.,
-    ]
-    fa_spec_val = FuncApproxSpec(
-        state_feature_funcs=state_ff,
-        sa_feature_funcs=sa_ff,
-        dnn_spec=None,
-        learning_rate=learning_rate_val
-    )
-    mc_obj = MonteCarlo(
-        mdp_rep_obj,
-        exploring_start_val,
-        softmax_flag,
-        epsilon_val,
-        epsilon_half_life_val,
-        episodes_limit,
-        max_steps_val,
-        fa_spec_val
-    )
-
-    def policy_func(i: int) -> Mapping[str, float]:
-        if i == 1:
-            ret = {'a': 0.4, 'b': 0.6}
-        elif i == 2:
-            ret = {'a': 0.7, 'c': 0.3}
-        elif i == 3:
-            ret = {'b': 1.0}
-        else:
-            raise ValueError
-        return ret
-
-    this_mc_path = mc_obj.get_mc_path(policy_func, 1)
-    print(this_mc_path)
-
-    this_qf = mc_obj.get_qv_func_fa(policy_func)
-    this_vf = mc_obj.get_value_func_fa(policy_func)
-    print(this_vf(1))
-    print(this_vf(2))
-    print(this_vf(3))
-
-    opt_det_polf = mc_obj.get_optimal_det_policy_func()
-
-    # noinspection PyShadowingNames
-    def opt_polf(s: S, opt_det_polf=opt_det_polf) -> Mapping[A, float]:
-        return {opt_det_polf(s): 1.0}
-
-    opt_vf = mc_obj.get_value_func_fa(opt_polf)
-    print(opt_polf(1))
-    print(opt_polf(2))
-    print(opt_polf(3))
-    print(opt_vf(1))
-    print(opt_vf(2))
-    print(opt_vf(3))
