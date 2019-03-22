@@ -1,10 +1,8 @@
 from typing import Optional
-from algorithms.td_algo_enum import TDAlgorithm
-from algorithms.rl_tabular.rl_tabular_base import RLTabularBase
-from processes.policy import Policy
-from processes.mp_funcs import get_rv_gen_func_single
-from processes.mdp_rep_for_rl_tabular import MDPRepForRLTabular
-from processes.mp_funcs import get_expected_action_value
+from td_algo_enum import TDAlgorithm
+from rl_tabular.rl_tabular_base import RLTabularBase
+from Process.policy import Policy
+from Process.mdp_rep_for_rl_tabular import MDPRepForRLTabular
 from utils.standard_typevars import VFDictType, QFDictType
 
 
@@ -148,66 +146,3 @@ class TDLambda(RLTabularBase):
             episodes += 1
 
         return qf_dict
-
-
-if __name__ == '__main__':
-    from processes.mdp_refined import MDPRefined
-    mdp_refined_data = {
-        1: {
-            'a': {1: (0.3, 9.2), 2: (0.6, 4.5), 3: (0.1, 5.0)},
-            'b': {2: (0.3, -0.5), 3: (0.7, 2.6)},
-            'c': {1: (0.2, 4.8), 2: (0.4, -4.9), 3: (0.4, 0.0)}
-        },
-        2: {
-            'a': {1: (0.3, 9.8), 2: (0.6, 6.7), 3: (0.1, 1.8)},
-            'c': {1: (0.2, 4.8), 2: (0.4, 9.2), 3: (0.4, -8.2)}
-        },
-        3: {
-            'a': {3: (1.0, 0.0)},
-            'b': {3: (1.0, 0.0)}
-        }
-    }
-    gamma_val = 0.9
-    mdp_ref_obj1 = MDPRefined(mdp_refined_data, gamma_val)
-    mdp_rep_obj = mdp_ref_obj1.get_mdp_rep_for_rl_tabular()
-
-    exploring_start_val = False
-    algorithm_type = TDAlgorithm.ExpectedSARSA
-    softmax_flag = True
-    epsilon_val = 0.1
-    epsilon_half_life_val = 100
-    learning_rate_val = 0.1
-    learning_rate_decay_val = 1e6
-    lambda_val = 0.2
-    episodes_limit = 1000
-    max_steps_val = 1000
-    esl_obj = TDLambda(
-        mdp_rep_obj,
-        exploring_start_val,
-        algorithm_type,
-        softmax_flag,
-        epsilon_val,
-        epsilon_half_life_val,
-        learning_rate_val,
-        learning_rate_decay_val,
-        lambda_val,
-        episodes_limit,
-        max_steps_val
-    )
-
-    policy_data = {
-        1: {'a': 0.4, 'b': 0.6},
-        2: {'a': 0.7, 'c': 0.3},
-        3: {'b': 1.0}
-    }
-    pol_obj = Policy(policy_data)
-
-    this_qf_dict = esl_obj.get_act_value_func_dict(pol_obj)
-    print(this_qf_dict)
-    this_vf_dict = esl_obj.get_value_func_dict(pol_obj)
-    print(this_vf_dict)
-
-    opt_pol = esl_obj.get_optimal_det_policy()
-    print(opt_pol)
-    opt_vf_dict = esl_obj.get_value_func_dict(opt_pol)
-    print(opt_vf_dict)
