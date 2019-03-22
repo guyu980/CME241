@@ -1,12 +1,11 @@
 from typing import Optional, Tuple, Sequence
-from algorithms.rl_tabular.rl_tabular_base import RLTabularBase
-from processes.policy import Policy
-from processes.mp_funcs import get_rv_gen_func_single
-from processes.mdp_rep_for_rl_tabular import MDPRepForRLTabular
-from algorithms.helper_funcs import get_returns_from_rewards_terminating
-from algorithms.helper_funcs import get_returns_from_rewards_non_terminating
-from algorithms.helper_funcs import get_soft_policy_from_qf_dict
-from algorithms.helper_funcs import get_nt_return_eval_steps
+from rl_tabular.rl_tabular_base import RLTabularBase
+from Process.policy import Policy
+from Process.mdp_rep_for_rl_tabular import MDPRepForRLTabular
+from helper_funcs import get_returns_from_rewards_terminating
+from helper_funcs import get_returns_from_rewards_non_terminating
+from helper_funcs import get_soft_policy_from_qf_dict
+from helper_funcs import get_nt_return_eval_steps
 import numpy as np
 from utils.generic_typevars import S, A
 from utils.standard_typevars import VFDictType, QFDictType
@@ -153,63 +152,3 @@ class MonteCarlo(RLTabularBase):
             episodes += 1
 
         return qf_dict
-
-
-if __name__ == '__main__':
-    from processes.mdp_refined import MDPRefined
-    mdp_refined_data = {
-        1: {
-            'a': {1: (0.3, 9.2), 2: (0.6, 4.5), 3: (0.1, 5.0)},
-            'b': {2: (0.3, -0.5), 3: (0.7, 2.6)},
-            'c': {1: (0.2, 4.8), 2: (0.4, -4.9), 3: (0.4, 0.0)}
-        },
-        2: {
-            'a': {1: (0.3, 9.8), 2: (0.6, 6.7), 3: (0.1, 1.8)},
-            'c': {1: (0.2, 4.8), 2: (0.4, 9.2), 3: (0.4, -8.2)}
-        },
-        3: {
-            'a': {3: (1.0, 0.0)},
-            'b': {3: (1.0, 0.0)}
-        }
-    }
-    gamma_val = 1.0
-    mdp_ref_obj1 = MDPRefined(mdp_refined_data, gamma_val)
-    mdp_rep_obj = mdp_ref_obj1.get_mdp_rep_for_rl_tabular()
-
-    exploring_start_val = False
-    first_visit_flag = True
-    softmax_flag = False
-    episodes_limit = 1000
-    epsilon_val = 0.1
-    epsilon_half_life_val = 100
-    max_steps_val = 1000
-    mc_obj = MonteCarlo(
-        mdp_rep_obj,
-        exploring_start_val,
-        first_visit_flag,
-        softmax_flag,
-        epsilon_val,
-        epsilon_half_life_val,
-        episodes_limit,
-        max_steps_val
-    )
-
-    policy_data = {
-        1: {'a': 0.4, 'b': 0.6},
-        2: {'a': 0.7, 'c': 0.3},
-        3: {'b': 1.0}
-    }
-    pol_obj = Policy(policy_data)
-
-    this_mc_path = mc_obj.get_mc_path(pol_obj, 1)
-    print(this_mc_path)
-
-    this_qf_dict = mc_obj.get_act_value_func_dict(pol_obj)
-    print(this_qf_dict)
-    this_vf_dict = mc_obj.get_value_func_dict(pol_obj)
-    print(this_vf_dict)
-
-    opt_pol = mc_obj.get_optimal_det_policy()
-    print(opt_pol)
-    opt_vf_dict = mc_obj.get_value_func_dict(opt_pol)
-    print(opt_vf_dict)
